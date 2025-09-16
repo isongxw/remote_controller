@@ -1,118 +1,345 @@
-# 远程控制器
+# 远程控制器 (Remote Controller)
 
-一个基于Python Flask的远程控制应用，允许通过手机网页界面远程控制电脑的键盘和鼠标操作。
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://python.org)
+[![Flask](https://img.shields.io/badge/Flask-3.1+-green.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## 功能特性
+一个基于 Python Flask 的现代化远程控制应用，通过 Web 界面实现对计算机键盘、鼠标和触摸板的远程控制。采用模块化架构设计，支持多种输入设备和操作模式。
 
-- 🖱️ **鼠标控制**: 支持鼠标移动、点击、双击、右键、滚动等操作
-- ⌨️ **键盘控制**: 支持文字输入、按键操作、快捷键组合
-- 📱 **移动端优化**: 响应式设计，完美适配手机触摸操作
-- 🔧 **Windows兼容**: 完整支持Windows系统的快捷键操作
-- 🌐 **网页界面**: 无需安装客户端，直接通过浏览器使用
+## 🚀 项目概述
 
-## 系统要求
+### 项目目的
+远程控制器旨在为用户提供一个安全、便捷的方式，通过移动设备或其他计算机的浏览器远程控制目标计算机。特别适用于：
+- 演示和展示场景
+- 媒体中心控制
+- 远程技术支持
+- 无线鼠标键盘替代方案
 
-- Python 3.8+
-- Windows/Linux/macOS
-- 支持现代浏览器的移动设备
+### 核心特性
+- 🖱️ **完整鼠标控制**: 移动、点击、滚动、拖拽等全功能支持
+- ⌨️ **智能键盘输入**: 文本输入、快捷键、特殊按键组合
+- 📱 **触摸板模拟**: 支持单指移动、双指滚动、双指右键等手势
+- 🎯 **精确控制**: 高精度坐标定位和平滑移动
+- 🔧 **系统集成**: 深度集成 Windows 系统功能
+- 🌐 **跨平台访问**: 支持任何现代浏览器设备
+- 🛡️ **安全设计**: 本地网络运行，支持访问控制
 
-## 安装和使用
+## 📋 系统要求
 
-### 1. 克隆项目
-```bash
-git clone <repository-url>
-cd remote_controller
+### 服务端 (被控制的计算机)
+- **操作系统**: Windows 10/11, macOS 10.14+, Linux (Ubuntu 18.04+)
+- **Python**: 3.12 或更高版本
+- **内存**: 最少 256MB 可用内存
+- **网络**: 支持 TCP/IP 网络连接
+
+### 客户端 (控制设备)
+- **浏览器**: Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+- **网络**: 与服务端在同一网络或可访问网络
+- **设备**: 支持触摸的移动设备或带鼠标的计算机
+
+## 🛠️ 安装和设置
+
+### 方法一：使用 uv (推荐)
+
+1. **安装 uv 包管理器**
+   ```bash
+   # Windows (PowerShell)
+   powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
+   
+   # macOS/Linux
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. **克隆项目**
+   ```bash
+   git clone https://github.com/your-username/remote-controller.git
+   cd remote-controller
+   ```
+
+3. **安装依赖**
+   ```bash
+   uv sync
+   ```
+
+4. **启动服务器**
+   ```bash
+   uv run python src/main.py
+   ```
+
+### 方法二：使用传统 pip
+
+1. **克隆项目**
+   ```bash
+   git clone https://github.com/your-username/remote-controller.git
+   cd remote-controller
+   ```
+
+2. **创建虚拟环境**
+   ```bash
+   python -m venv venv
+   
+   # Windows
+   venv\Scripts\activate
+   
+   # macOS/Linux
+   source venv/bin/activate
+   ```
+
+3. **安装依赖**
+   ```bash
+   pip install flask flask-cors pynput
+   ```
+
+4. **启动服务器**
+   ```bash
+   python src/main.py
+   ```
+
+### 依赖项说明
+- **Flask** (3.1+): Web 框架，提供 HTTP 服务和 API 接口
+- **Flask-CORS** (6.0+): 跨域资源共享支持
+- **pynput** (1.8+): 系统输入设备控制库
+
+## 📖 使用指南
+
+### 基本使用流程
+
+1. **启动服务器**
+   ```bash
+   uv run python src/main.py
+   ```
+   
+2. **获取访问地址**
+   服务器启动后会显示访问地址：
+   ```
+   远程控制器服务器启动中...
+   访问地址: http://0.0.0.0:5000
+   控制页面: http://0.0.0.0:5000/
+   ```
+
+3. **连接控制设备**
+   - 确保控制设备与服务器在同一网络
+   - 在浏览器中访问 `http://[服务器IP]:5000`
+   - 开始远程控制
+
+### 功能使用示例
+
+#### 鼠标控制
+```javascript
+// 移动鼠标到指定位置
+fetch('/api/mouse', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        action: 'move',
+        x: 100,
+        y: 200
+    })
+});
+
+// 执行左键点击
+fetch('/api/mouse', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        action: 'click',
+        button: 'left'
+    })
+});
 ```
 
-### 2. 安装依赖
-```bash
-uv sync
+#### 键盘控制
+```javascript
+// 发送文本输入
+fetch('/api/keyboard', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        action: 'type',
+        text: 'Hello World'
+    })
+});
+
+// 执行快捷键
+fetch('/api/keyboard', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        action: 'hotkey',
+        keys: ['ctrl', 'c']
+    })
+});
 ```
 
-### 3. 启动服务器
-```bash
-uv run python src/remote_controller/main.py
+#### 触摸板控制
+```javascript
+// 触摸板移动
+fetch('/api/touchpad', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({
+        action: 'move',
+        delta_x: 10,
+        delta_y: -5,
+        sensitivity: 1.0
+    })
+});
 ```
 
-### 4. 连接使用
-1. 确保电脑和手机在同一网络下
-2. 在手机浏览器中访问: `http://[电脑IP]:5000`
-3. 开始远程控制
+### Web 界面功能
 
-## 功能说明
+#### 触摸板区域
+- **单指移动**: 控制鼠标光标移动
+- **单指轻触**: 执行左键点击
+- **双指滚动**: 页面或内容滚动
+- **双指轻触**: 执行右键点击
 
-### 鼠标控制
-- **触摸板区域**: 在触摸板区域滑动手指控制鼠标移动
-- **左键/右键**: 点击对应按钮执行鼠标点击
-- **双击**: 快速双击功能
-- **滚动**: 在触摸板上使用双指滚动（支持的设备）
+#### 控制按钮
+- **鼠标按钮**: 左键、右键、中键、双击
+- **方向键**: 上、下、左、右导航
+- **功能键**: Esc、Tab、Enter、Backspace、Delete
+- **修饰键**: Ctrl、Alt、Shift、Win
 
-### 键盘控制
-- **文字输入**: 在输入框中输入文字后点击发送
-- **常用按键**: Esc、Tab、Enter、Backspace、Delete等
-- **方向键**: 上下左右方向键
-- **修饰键**: Ctrl、Alt、Shift、Win键
-- **快捷键**: 预设常用快捷键组合
+#### 快捷键面板
+- **文件操作**: Ctrl+S (保存), Ctrl+O (打开)
+- **编辑操作**: Ctrl+C/V/X (复制/粘贴/剪切)
+- **系统操作**: Alt+Tab (切换), Win+D (桌面)
 
-### 支持的快捷键
-- `Ctrl+C` / `Ctrl+V`: 复制/粘贴
-- `Ctrl+Z` / `Ctrl+Y`: 撤销/重做
-- `Ctrl+A`: 全选
-- `Ctrl+S`: 保存
-- `Alt+Tab`: 程序切换
-- `Win+D`: 显示桌面
-- `Win+L`: 锁屏
-- `Ctrl+Shift+Esc`: 任务管理器
+## 🏗️ 代码结构
 
-## 技术架构
-
-- **后端**: Python Flask + pynput
-- **前端**: HTML5 + CSS3 + JavaScript
-- **跨域支持**: Flask-CORS
-- **触摸支持**: 原生触摸事件处理
-
-## 安全注意事项
-
-⚠️ **重要提醒**:
-- 此应用允许完全控制您的电脑
-- 请仅在受信任的网络环境中使用
-- 建议仅在本地网络中使用，避免暴露到公网
-- 使用完毕后请及时关闭服务器
-
-## 开发和贡献
-
-### 项目结构
 ```
 remote_controller/
-├── src/
-│   └── remote_controller/
-│       ├── main.py              # 主应用文件
-│       └── templates/
-│           └── index.html       # 网页界面
-├── pyproject.toml              # 项目配置
-└── README.md                   # 项目说明
+├── src/                          # 源代码目录
+│   ├── main.py                   # 应用程序入口点
+│   ├── core/                     # 核心模块
+│   │   ├── __init__.py
+│   │   ├── app.py                # Flask 应用工厂
+│   │   └── config.py             # 应用配置
+│   ├── handlers/                 # HTTP 请求处理器
+│   │   ├── __init__.py
+│   │   ├── main.py               # 主页面路由
+│   │   ├── mouse.py              # 鼠标控制 API
+│   │   ├── keyboard.py           # 键盘控制 API
+│   │   ├── touchpad.py           # 触摸板控制 API
+│   │   └── system.py             # 系统功能 API
+│   ├── services/                 # 业务逻辑服务
+│   │   ├── __init__.py
+│   │   ├── mouse_service.py      # 鼠标操作服务
+│   │   ├── keyboard_service.py   # 键盘操作服务
+│   │   ├── touchpad_service.py   # 触摸板处理服务
+│   │   └── system_service.py     # 系统功能服务
+│   ├── utils/                    # 工具模块
+│   │   ├── __init__.py
+│   │   ├── security.py           # 安全和权限控制
+│   │   └── system_utils.py       # 系统工具函数
+│   └── templates/                # Web 模板
+│       └── index.html            # 主控制界面
+├── .gitignore                    # Git 忽略文件
+├── .python-version               # Python 版本指定
+├── pyproject.toml                # 项目配置和依赖
+├── uv.lock                       # 依赖锁定文件
+└── README.md                     # 项目文档
 ```
 
-### 开发环境
-```bash
-# 安装开发依赖
-uv add --dev pytest black flake8
+### 架构说明
 
-# 运行测试
-uv run pytest
+#### 分层架构
+1. **表示层** (`handlers/`): 处理 HTTP 请求和响应
+2. **业务层** (`services/`): 实现核心业务逻辑
+3. **工具层** (`utils/`): 提供通用工具和安全控制
+4. **配置层** (`core/`): 应用配置和初始化
 
-# 代码格式化
-uv run black src/
-```
+#### 核心组件
 
-## 许可证
+**MouseService**: 鼠标操作核心服务
+- 坐标移动和点击控制
+- 滚轮操作和拖拽功能
+- 多按钮支持 (左键/右键/中键)
 
-MIT License
+**KeyboardService**: 键盘输入核心服务  
+- 文本输入和特殊按键
+- 快捷键组合处理
+- 修饰键状态管理
 
-## 更新日志
+**TouchpadService**: 触摸板手势处理
+- 触摸事件识别和处理
+- 手势模式检测 (移动/滚动/点击)
+- 多点触控支持
 
-### v1.0.0
-- 初始版本发布
-- 支持基本的鼠标和键盘控制
-- 移动端优化界面
-- Windows系统兼容性
+## 🔒 安全注意事项
+
+### 重要警告
+⚠️ **此应用程序具有完全的系统控制权限，请谨慎使用！**
+
+### 安全建议
+1. **网络安全**
+   - 仅在受信任的本地网络中使用
+   - 避免将服务暴露到公共互联网
+   - 考虑使用防火墙限制访问
+
+2. **访问控制**
+   - 使用完毕后立即关闭服务器
+   - 定期检查网络连接状态
+   - 监控异常访问活动
+
+3. **系统安全**
+   - 确保运行环境的安全性
+   - 定期更新依赖包版本
+   - 避免在生产环境中使用调试模式
+
+## 🤝 贡献指南
+
+### 开发环境设置
+
+1. **Fork 项目**
+   ```bash
+   git clone https://github.com/your-username/remote-controller.git
+   cd remote-controller
+   ```
+
+2. **安装开发依赖**
+   ```bash
+   uv add --dev pytest black flake8 mypy
+   ```
+
+3. **运行测试**
+   ```bash
+   uv run pytest tests/
+   ```
+
+4. **代码格式化**
+   ```bash
+   uv run black src/
+   uv run flake8 src/
+   ```
+
+### 常见问题
+
+**Q: 无法连接到服务器？**
+A: 检查防火墙设置，确保端口 5000 未被阻止，并验证网络连接。
+
+**Q: 触摸板手势不工作？**
+A: 确保浏览器支持触摸事件，并检查设备的触摸功能是否正常。
+
+**Q: 键盘输入有延迟？**
+A: 检查网络延迟，考虑优化网络连接或降低输入频率。
+
+
+## 📈 更新日志
+
+### v0.1.0 (当前版本)
+- ✨ 初始版本发布
+- 🖱️ 完整的鼠标控制功能
+- ⌨️ 键盘输入和快捷键支持
+- 📱 触摸板手势识别
+- 🏗️ 模块化架构设计
+- 🛡️ 基础安全控制
+- 🌐 响应式 Web 界面
+
+### 计划功能
+- 📱 移动应用客户端
+- 🔧 更多系统集成功能
+
+---
+
+**感谢使用远程控制器！** 如果这个项目对您有帮助，请考虑给我们一个 ⭐ Star！
