@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>远程控制器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 100%;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section {
+            background: rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            color: #fff;
+        }
+
+        /* 触摸板样式 */
+        .touchpad {
+            width: 100%;
+            height: 300px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 15px;
+            margin-bottom: 15px;
+            position: relative;
+            touch-action: none;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .touchpad::before {
+            content: "触摸板区域";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 1.2em;
+            pointer-events: none;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            margin: 5px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            min-width: 80px;
+        }
+
+        .btn:hover, .btn:active {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+        }
+
+        .btn.small {
+            padding: 10px 15px;
+            font-size: 14px;
+            min-width: 60px;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .mouse-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .mouse-buttons .btn {
+            flex: 1;
+        }
+
+        /* 键盘区域 */
+        .keyboard-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .key-btn {
+            background: linear-gradient(45deg, #a29bfe, #6c5ce7);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 45px;
+            min-height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key-btn:active {
+            transform: scale(0.95);
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+        }
+
+        .key-btn.wide {
+            min-width: 100px;
+        }
+
+        /* 文本输入 */
+        .text-input {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+
+        /* 快捷键按钮 */
+        .hotkey-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .hotkey-btn {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            border: none;
+            color: white;
+            padding: 15px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .hotkey-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .touchpad {
+                height: 250px;
+            }
+            
+            .btn {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+
+        /* 连接状态指示器 */
+        .connection-status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00b894;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖥️ 远程控制器</h1>
+            <div class="status">
+                <span class="connection-status"></span>
+                <span id="status-text">连接正常</span>
+            </div>
+        </div>
+
+        <!-- 鼠标控制区域 -->
+        <div class="section">
+            <h2>🖱️ 鼠标控制</h2>
+            <div class="touchpad" id="touchpad"></div>
+            <div class="mouse-buttons">
+                <button class="btn" onclick="mouseClick('left')">左键</button>
+                <button class="btn" onclick="mouseClick('right')">右键</button>
+                <button class="btn secondary" onclick="mouseClick('left', 2)">双击</button>
+                <button class="btn secondary" onclick="resetMouse()" style="background-color: #ff6b6b;">重置鼠标</button>
+            </div>
+        </div>
+
+        <!-- 键盘控制区域 -->
+        <div class="section">
+            <h2>⌨️ 键盘控制</h2>
+            <input type="text" class="text-input" id="textInput" placeholder="输入文字后点击发送">
+            <div class="btn-group">
+                <button class="btn" onclick="sendText()">发送文字</button>
+                <button class="btn secondary" onclick="clearText()">清空</button>
+            </div>
+            
+            <!-- 常用按键 -->
+            <div class="keyboard-row">
+                <button class="key-btn" onclick="pressKey('escape')">Esc</button>
+                <button class="key-btn" onclick="pressKey('tab')">Tab</button>
+                <button class="key-btn" onclick="pressKey('enter')">Enter</button>
+                <button class="key-btn" onclick="pressKey('backspace')">⌫</button>
+                <button class="key-btn" onclick="pressKey('delete')">Del</button>
+            </div>
+            
+            <!-- 符号按键 -->
+            <div class="keyboard-row">
+                <button class="key-btn" onclick="pressKey('[')">[ </button>
+                <button class="key-btn" onclick="pressKey(']')">] </button>
+                <button class="key-btn" onclick="pressKey('page_up')">PgUp</button>
+                <button class="key-btn" onclick="pressKey('page_down')">PgDn</button>
+                <button class="key-btn" onclick="pressKey('home')">Home</button>
+                <button class="key-btn" onclick="pressKey('end')">End</button>
+            </div>
+            
+            <!-- 方向键 -->
+            <div class="keyboard-row">
+                <button class="key-btn" onclick="pressKey('up')">↑</button>
+                <button class="key-btn" onclick="pressKey('down')">↓</button>
+                <button class="key-btn" onclick="pressKey('left')">←</button>
+                <button class="key-btn" onclick="pressKey('right')">→</button>
+            </div>
+            
+            <!-- 修饰键 -->
+            <div class="keyboard-row">
+                <button class="key-btn" onclick="pressKey('ctrl')">Ctrl</button>
+                <button class="key-btn" onclick="pressKey('alt')">Alt</button>
+                <button class="key-btn" onclick="pressKey('shift')">Shift</button>
+                <button class="key-btn" onclick="pressKey('win')">Win</button>
+                <button class="key-btn wide" onclick="pressKey('space')">Space</button>
+            </div>
+        </div>
+
+        <!-- 快捷键区域 -->
+        <div class="section">
+            <h2>🚀 常用快捷键</h2>
+            <div class="hotkey-grid">
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'c'])">复制<br>Ctrl+C</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'v'])">粘贴<br>Ctrl+V</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'z'])">撤销<br>Ctrl+Z</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'y'])">重做<br>Ctrl+Y</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'a'])">全选<br>Ctrl+A</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 's'])">保存<br>Ctrl+S</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['alt', 'tab'])">切换<br>Alt+Tab</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['win', 'd'])">桌面<br>Win+D</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'shift', 'escape'])">任务管理器</button>
+                <button class="hotkey-btn" onclick="sendHotkey(['win', 'l'])">锁屏<br>Win+L</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 触摸板相关变量
+        let touchpad = document.getElementById('touchpad');
+        let isDragging = false;
+        let lastX = 0, lastY = 0;
+
+        // 触摸板事件处理
+        touchpad.addEventListener('touchstart', handleTouchStart, {passive: false});
+        touchpad.addEventListener('touchmove', handleTouchMove, {passive: false});
+        touchpad.addEventListener('touchend', handleTouchEnd, {passive: false});
+        touchpad.addEventListener('mousedown', handleMouseDown);
+        touchpad.addEventListener('mousemove', handleMouseMove);
+        touchpad.addEventListener('mouseup', handleMouseUp);
+
+        // 触摸事件处理
+        function handleTouchStart(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            const rect = touchpad.getBoundingClientRect();
+            lastX = touch.clientX - rect.left;
+            lastY = touch.clientY - rect.top;
+            isDragging = true;
+        }
+
+        function handleTouchMove(e) {
+            e.preventDefault();
+            if (!isDragging) return;
+            
+            const touch = e.touches[0];
+            const rect = touchpad.getBoundingClientRect();
+            const currentX = touch.clientX - rect.left;
+            const currentY = touch.clientY - rect.top;
+            
+            const deltaX = (currentX - lastX) * 2; // 增加灵敏度
+            const deltaY = (currentY - lastY) * 2;
+            
+            moveMouse(deltaX, deltaY, true);
+            
+            lastX = currentX;
+            lastY = currentY;
+        }
+
+        function handleTouchEnd(e) {
+            e.preventDefault();
+            isDragging = false;
+        }
+
+        // 鼠标事件处理（用于桌面测试）
+        function handleMouseDown(e) {
+            const rect = touchpad.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+            isDragging = true;
+        }
+
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            
+            const rect = touchpad.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            const deltaX = currentX - lastX;
+            const deltaY = currentY - lastY;
+            
+            moveMouse(deltaX, deltaY, true);
+            
+            lastX = currentX;
+            lastY = currentY;
+        }
+
+        function handleMouseUp(e) {
+            isDragging = false;
+        }
+
+        // API调用函数
+        async function apiCall(endpoint, data) {
+            try {
+                const response = await fetch(`/api/${endpoint}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                if (result.status !== 'success') {
+                    console.error('API调用失败:', result.message);
+                    updateStatus('错误: ' + result.message, false);
+                }
+                return result;
+            } catch (error) {
+                console.error('网络错误:', error);
+                updateStatus('网络连接错误', false);
+                return null;
+            }
+        }
+
+        // 鼠标控制函数
+        function moveMouse(x, y, relative = false) {
+            apiCall('mouse', {
+                action: 'move',
+                x: x,
+                y: y,
+                relative: relative
+            });
+        }
+
+        function mouseClick(button, clicks = 1) {
+            apiCall('mouse', {
+                action: 'click',
+                button: button,
+                clicks: clicks
+            });
+        }
+
+        function mouseScroll(dx, dy) {
+            apiCall('mouse', {
+                action: 'scroll',
+                dx: dx,
+                dy: dy
+            });
+        }
+
+        function resetMouse() {
+            apiCall('mouse', {
+                action: 'reset'
+            });
+        }
+
+        // 键盘控制函数
+        function pressKey(key) {
+            apiCall('keyboard', {
+                action: 'press',
+                key: key
+            }).then(() => {
+                setTimeout(() => {
+                    apiCall('keyboard', {
+                        action: 'release',
+                        key: key
+                    });
+                }, 100);
+            });
+        }
+
+        function sendText() {
+            const text = document.getElementById('textInput').value;
+            if (text) {
+                apiCall('keyboard', {
+                    action: 'type',
+                    text: text
+                });
+            }
+        }
+
+        function clearText() {
+            document.getElementById('textInput').value = '';
+        }
+
+        function sendHotkey(keys) {
+            apiCall('keyboard', {
+                action: 'hotkey',
+                keys: keys
+            });
+        }
+
+        // 状态更新函数
+        function updateStatus(message, isConnected = true) {
+            const statusText = document.getElementById('status-text');
+            const statusIndicator = document.querySelector('.connection-status');
+            
+            statusText.textContent = message;
+            statusIndicator.style.background = isConnected ? '#00b894' : '#e17055';
+        }
+
+        // 滚动支持（触摸板）
+        touchpad.addEventListener('wheel', function(e) {
+            e.preventDefault();
+            mouseScroll(e.deltaX / 10, e.deltaY / 10);
+        }, {passive: false});
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            updateStatus('远程控制器已就绪');
+            
+            // 只在触摸板区域防止页面滚动，其他区域允许正常滚动
+            touchpad.addEventListener('touchmove', function(e) {
+                e.preventDefault();
+            }, {passive: false});
+            
+            // 允许页面其他区域正常滚动
+            document.addEventListener('touchstart', function(e) {
+                // 如果触摸开始在触摸板区域，标记为触摸板操作
+                if (e.target === touchpad || touchpad.contains(e.target)) {
+                    e.target.dataset.isTouchpad = 'true';
+                }
+            });
+            
+            document.addEventListener('touchmove', function(e) {
+                // 只有在触摸板区域才阻止默认滚动行为
+                if (e.target.dataset.isTouchpad === 'true') {
+                    e.preventDefault();
+                }
+            }, {passive: false});
+        });
+    </script>
+</body>
+</html>

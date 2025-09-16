@@ -1,0 +1,14 @@
+[project]
+name = "remote-controller"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.1.2",
+    "flask-cors>=6.0.1",
+    "pynput>=1.8.1",
+]
+
+[project.scripts]
+remote-controller = "remote_controller.main:app"
