@@ -77,13 +77,63 @@ def handle_keyboard():
                 else:
                     mapped_keys.append(k)
             
-            # 按下所有键
-            for k in mapped_keys:
-                keyboard_controller.press(k)
-            time.sleep(0.1)
-            # 释放所有键
-            for k in reversed(mapped_keys):
-                keyboard_controller.release(k)
+            # 特殊处理任务管理器快捷键
+            if keys == ['ctrl', 'shift', 'escape']:
+                print("执行任务管理器快捷键...")
+                try:
+                    # 确保释放所有可能卡住的按键
+                    for key_to_release in [Key.ctrl_l, Key.shift_l, Key.esc]:
+                        try:
+                            keyboard_controller.release(key_to_release)
+                        except:
+                            pass
+                    
+                    # 短暂延迟后执行快捷键
+                    time.sleep(0.1)
+                    keyboard_controller.press(Key.ctrl_l)
+                    keyboard_controller.press(Key.shift_l)
+                    keyboard_controller.press(Key.esc)
+                    time.sleep(0.2)  # 增加按键持续时间
+                    keyboard_controller.release(Key.esc)
+                    keyboard_controller.release(Key.shift_l)
+                    keyboard_controller.release(Key.ctrl_l)
+                    
+                    # 额外延迟确保任务管理器完全启动
+                    time.sleep(0.5)
+                    print("任务管理器快捷键执行完成")
+                except Exception as e:
+                    print(f"任务管理器快捷键执行错误: {e}")
+                    
+            # 特殊处理锁屏快捷键
+            elif keys == ['win', 'l']:
+                print("执行锁屏快捷键...")
+                try:
+                    # 确保释放所有可能卡住的按键
+                    for key_to_release in [Key.cmd, Key.alt_l, Key.ctrl_l]:
+                        try:
+                            keyboard_controller.release(key_to_release)
+                        except:
+                            pass
+                    
+                    time.sleep(0.1)
+                    keyboard_controller.press(Key.cmd)
+                    time.sleep(0.1)
+                    keyboard_controller.press('l')
+                    time.sleep(0.2)
+                    keyboard_controller.release('l')
+                    keyboard_controller.release(Key.cmd)
+                    print("锁屏快捷键执行完成")
+                except Exception as e:
+                    print(f"锁屏快捷键执行错误: {e}")
+            else:
+                # 普通组合键处理
+                # 按下所有键
+                for k in mapped_keys:
+                    keyboard_controller.press(k)
+                time.sleep(0.1)
+                # 释放所有键
+                for k in reversed(mapped_keys):
+                    keyboard_controller.release(k)
         
         return jsonify({'status': 'success'})
     except Exception as e:
