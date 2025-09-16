@@ -106,6 +106,10 @@
         .btn.secondary {
             background: linear-gradient(45deg, #74b9ff, #0984e3);
         }
+        
+        .btn.secondary[title*="重置"] {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
 
         .btn.small {
             padding: 10px 15px;
@@ -124,8 +128,20 @@
 
         .mouse-buttons {
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
             margin-bottom: 15px;
+            max-width: 100%;
+        }
+
+        .mouse-buttons .btn {
+            flex: 1;
+            min-width: 70px;
+            max-width: 120px;
+            padding: 12px 8px;
+            font-size: 14px;
+            text-align: center;
         }
 
         .mouse-buttons .btn {
@@ -221,6 +237,30 @@
                 padding: 12px 15px;
                 font-size: 14px;
             }
+            
+            .mouse-buttons {
+                gap: 6px;
+            }
+            
+            .mouse-buttons .btn {
+                min-width: 60px;
+                max-width: 100px;
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mouse-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .mouse-buttons .btn {
+                width: 90%;
+                max-width: 200px;
+                margin: 2px 0;
+            }
         }
 
         /* 连接状态指示器 */
@@ -259,7 +299,7 @@
                 <button class="btn" onclick="mouseClick('left')">左键</button>
                 <button class="btn" onclick="mouseClick('right')">右键</button>
                 <button class="btn secondary" onclick="mouseClick('left', 2)">双击</button>
-                <button class="btn secondary" onclick="resetMouse()" style="background-color: #ff6b6b;">重置鼠标</button>
+                <button class="btn secondary" onclick="resetMouse()" title="重置鼠标状态">重置</button>
             </div>
         </div>
 
