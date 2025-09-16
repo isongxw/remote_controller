@@ -77,54 +77,142 @@ def handle_keyboard():
                 else:
                     mapped_keys.append(k)
             
+            # 检测操作系统
+            current_platform = platform.system()
+            
             # 特殊处理任务管理器快捷键
             if keys == ['ctrl', 'shift', 'escape']:
                 print("执行任务管理器快捷键...")
                 try:
-                    # 确保释放所有可能卡住的按键
-                    for key_to_release in [Key.ctrl_l, Key.shift_l, Key.esc]:
-                        try:
-                            keyboard_controller.release(key_to_release)
-                        except:
-                            pass
-                    
-                    # 短暂延迟后执行快捷键
-                    time.sleep(0.1)
-                    keyboard_controller.press(Key.ctrl_l)
-                    keyboard_controller.press(Key.shift_l)
-                    keyboard_controller.press(Key.esc)
-                    time.sleep(0.2)  # 增加按键持续时间
-                    keyboard_controller.release(Key.esc)
-                    keyboard_controller.release(Key.shift_l)
-                    keyboard_controller.release(Key.ctrl_l)
-                    
-                    # 额外延迟确保任务管理器完全启动
-                    time.sleep(0.5)
-                    print("任务管理器快捷键执行完成")
+                    if current_platform == 'Windows':
+                        # Windows系统：使用标准快捷键，但增强处理
+                        print("Windows系统 - 使用快捷键方式")
+                        # 确保释放所有可能卡住的按键
+                        for key_to_release in [Key.ctrl_l, Key.shift_l, Key.esc, Key.alt_l]:
+                            try:
+                                keyboard_controller.release(key_to_release)
+                            except:
+                                pass
+                        
+                        # 短暂延迟后执行快捷键
+                        time.sleep(0.2)
+                        keyboard_controller.press(Key.ctrl_l)
+                        keyboard_controller.press(Key.shift_l)
+                        keyboard_controller.press(Key.esc)
+                        time.sleep(0.3)  # 增加按键持续时间
+                        keyboard_controller.release(Key.esc)
+                        keyboard_controller.release(Key.shift_l)
+                        keyboard_controller.release(Key.ctrl_l)
+                        
+                        # 额外延迟确保任务管理器完全启动
+                        time.sleep(0.8)
+                        print("Windows任务管理器快捷键执行完成")
+                        
+                    else:
+                        # Linux系统：使用系统命令
+                        print("Linux系统 - 使用系统命令")
+                        import subprocess
+                        task_managers = ['gnome-system-monitor', 'htop', 'top']
+                        launched = False
+                        
+                        for tm in task_managers:
+                            try:
+                                if tm == 'htop':
+                                    subprocess.Popen(['x-terminal-emulator', '-e', 'htop'], 
+                                                   stdout=subprocess.DEVNULL, 
+                                                   stderr=subprocess.DEVNULL)
+                                    launched = True
+                                    print(f"成功启动任务管理器: {tm}")
+                                    break
+                                elif tm == 'gnome-system-monitor':
+                                    subprocess.Popen([tm], 
+                                                   stdout=subprocess.DEVNULL, 
+                                                   stderr=subprocess.DEVNULL)
+                                    launched = True
+                                    print(f"成功启动任务管理器: {tm}")
+                                    break
+                            except FileNotFoundError:
+                                continue
+                            except Exception as e:
+                                print(f"启动 {tm} 失败: {e}")
+                                continue
+                        
+                        if not launched:
+                            print("系统命令启动失败，尝试快捷键方式...")
+                            keyboard_controller.press(Key.ctrl_l)
+                            keyboard_controller.press(Key.shift_l)
+                            keyboard_controller.press(Key.esc)
+                            time.sleep(0.2)
+                            keyboard_controller.release(Key.esc)
+                            keyboard_controller.release(Key.shift_l)
+                            keyboard_controller.release(Key.ctrl_l)
+                            
                 except Exception as e:
-                    print(f"任务管理器快捷键执行错误: {e}")
+                    print(f"任务管理器启动错误: {e}")
                     
             # 特殊处理锁屏快捷键
             elif keys == ['win', 'l']:
                 print("执行锁屏快捷键...")
                 try:
-                    # 确保释放所有可能卡住的按键
-                    for key_to_release in [Key.cmd, Key.alt_l, Key.ctrl_l]:
-                        try:
-                            keyboard_controller.release(key_to_release)
-                        except:
-                            pass
-                    
-                    time.sleep(0.1)
-                    keyboard_controller.press(Key.cmd)
-                    time.sleep(0.1)
-                    keyboard_controller.press('l')
-                    time.sleep(0.2)
-                    keyboard_controller.release('l')
-                    keyboard_controller.release(Key.cmd)
-                    print("锁屏快捷键执行完成")
+                    if current_platform == 'Windows':
+                        # Windows系统：使用Win+L快捷键，但增强处理
+                        print("Windows系统 - 使用Win+L快捷键")
+                        # 确保释放所有可能卡住的按键
+                        for key_to_release in [Key.cmd, Key.alt_l, Key.ctrl_l, Key.shift_l]:
+                            try:
+                                keyboard_controller.release(key_to_release)
+                            except:
+                                pass
+                        
+                        time.sleep(0.2)
+                        keyboard_controller.press(Key.cmd)  # Windows键
+                        time.sleep(0.1)
+                        keyboard_controller.press('l')
+                        time.sleep(0.3)  # 增加按键持续时间
+                        keyboard_controller.release('l')
+                        keyboard_controller.release(Key.cmd)
+                        print("Windows锁屏快捷键执行完成")
+                        
+                    else:
+                        # Linux系统：使用系统命令
+                        print("Linux系统 - 使用系统锁屏命令")
+                        import subprocess
+                        lock_commands = [
+                            ['loginctl', 'lock-session'],
+                            ['gnome-screensaver-command', '--lock'],
+                            ['xdg-screensaver', 'lock'],
+                            ['dm-tool', 'lock'],
+                            ['xscreensaver-command', '-lock']
+                        ]
+                        
+                        locked = False
+                        for cmd in lock_commands:
+                            try:
+                                result = subprocess.run(cmd, 
+                                                      stdout=subprocess.DEVNULL, 
+                                                      stderr=subprocess.DEVNULL, 
+                                                      timeout=5)
+                                if result.returncode == 0:
+                                    locked = True
+                                    print(f"成功执行锁屏命令: {' '.join(cmd)}")
+                                    break
+                            except (FileNotFoundError, subprocess.TimeoutExpired):
+                                continue
+                            except Exception as e:
+                                print(f"锁屏命令 {' '.join(cmd)} 失败: {e}")
+                                continue
+                        
+                        if not locked:
+                            print("系统锁屏命令失败，尝试快捷键方式...")
+                            keyboard_controller.press(Key.cmd)
+                            time.sleep(0.1)
+                            keyboard_controller.press('l')
+                            time.sleep(0.2)
+                            keyboard_controller.release('l')
+                            keyboard_controller.release(Key.cmd)
+                            
                 except Exception as e:
-                    print(f"锁屏快捷键执行错误: {e}")
+                    print(f"锁屏执行错误: {e}")
             else:
                 # 普通组合键处理
                 # 按下所有键
