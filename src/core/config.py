@@ -13,6 +13,7 @@ class Config:
     """应用配置类"""
 
     HOST = "0.0.0.0"
+    LOCAL_HOST = "127.0.0.1"
     PORT = 5000
     DEBUG = True
 

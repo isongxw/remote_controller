@@ -5,7 +5,6 @@
 
 from .keyboard import keyboard_bp
 from .main import main_bp
-from .mouse import mouse_bp
 from .system import system_bp
 from .touchpad import touchpad_bp
 

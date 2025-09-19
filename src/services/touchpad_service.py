@@ -7,6 +7,8 @@ import logging
 import threading
 import time
 
+from pynput import mouse
+
 from core.config import TOUCHPAD_CONFIG
 from utils.security import get_controllers
 
@@ -57,7 +59,7 @@ class TouchpadService:
         elif touch_count == 2:
             return "scroll"
         elif touch_count >= 3:
-            return "zoom"
+            return "dragging"
         else:
             return "single"
 
@@ -91,17 +93,25 @@ class TouchpadService:
             "start_time": time.time(),
         }
 
-        logger.debug(f"触摸开始记录: touch_id={touch_id}, 位置=({x}, {y})")
+        logger.debug(
+            f"触摸开始记录: touch_id={touch_id}, 位置=({x}, {y}), 触摸模式={self.detect_touch_mode(touches_data)}"
+        )
 
         # 检测触摸模式
         mode = self.detect_touch_mode(touches_data)
 
         if mode == "single":
             # 单指触摸，准备延迟点击
-            self._prepare_delayed_click(x, y)
+            self._prepare_delayed_click()
         elif mode == "scroll":
             # 双指触摸，准备滚动
             self._cancel_pending_click()
+        elif mode == "dragging":
+            # 三指触摸，准备拖拽
+            self._cancel_pending_click()
+            self.touchpad_state["is_dragging"] = True
+            self.touchpad_state["drag_start_pos"] = (x, y)
+            self.mouse_controller.press(mouse.Button.left)
 
         return {"status": "success", "mode": mode}
 
@@ -152,13 +162,12 @@ class TouchpadService:
                 # 移动距离超过阈值，取消点击，开始拖拽或移动鼠标
                 self._cancel_pending_click()
 
-                if not self.touchpad_state["is_dragging"]:
-                    # 移动鼠标光标
-                    current_pos = self.mouse_controller.position
-                    new_x = current_pos[0] + dx * self.config["CURSOR_SENSITIVITY"]
-                    new_y = current_pos[1] + dy * self.config["CURSOR_SENSITIVITY"]
-                    logger.debug(f"移动鼠标: 从 {current_pos} 到 ({new_x}, {new_y})")
-                    self.mouse_controller.position = (new_x, new_y)
+            # 移动鼠标光标
+            current_pos = self.mouse_controller.position
+            new_x = current_pos[0] + dx * self.config["CURSOR_SENSITIVITY"]
+            new_y = current_pos[1] + dy * self.config["CURSOR_SENSITIVITY"]
+            logger.debug(f"移动鼠标: 从 {current_pos} 到 ({new_x}, {new_y})")
+            self.mouse_controller.position = (new_x, new_y)
 
         elif mode == "scroll":
             # 双指滚动
@@ -167,6 +176,16 @@ class TouchpadService:
             scroll_dy = -dy * self.config["SCROLL_SENSITIVITY"]  # 反转Y轴
             logger.debug(f"滚动: scroll_dx={scroll_dx}, scroll_dy={scroll_dy}")
             self.mouse_controller.scroll(scroll_dx, scroll_dy)
+        elif mode == "dragging":
+            # 三指拖拽
+            self.touchpad_state["is_dragging"] = True
+            self.touchpad_state["drag_start_pos"] = (x, y)
+            # 移动鼠标光标
+            current_pos = self.mouse_controller.position
+            new_x = current_pos[0] + dx * self.config["CURSOR_SENSITIVITY"]
+            new_y = current_pos[1] + dy * self.config["CURSOR_SENSITIVITY"]
+            logger.debug(f"移动鼠标: 从 {current_pos} 到 ({new_x}, {new_y})")
+            self.mouse_controller.position = (new_x, new_y)
 
         return {"status": "success", "mode": mode, "dx": dx, "dy": dy}
 
@@ -215,11 +234,14 @@ class TouchpadService:
             and total_distance < self.config["MOVE_THRESHOLD"]
         ):
             logger.debug("执行双指右键点击")
-            from pynput import mouse
-
             self.mouse_controller.click(mouse.Button.right)
             action_performed = "right_click"
             self._cancel_pending_click()  # 取消任何待处理的左键点击
+        elif mode == "single":
+            action_performed = "left_click"
+        elif mode == "dragging":
+            self.mouse_controller.release(mouse.Button.left)
+            logger.debug("三指拖拽结束，释放鼠标左键")
 
         # 移除触摸状态
         self.touchpad_state["active_touches"].pop(touch_id)
@@ -237,19 +259,16 @@ class TouchpadService:
 
         return result
 
-    def _prepare_delayed_click(self, x, y):
+    def _prepare_delayed_click(self):
         """
         准备延迟点击
 
-        Args:
-            x: X坐标
-            y: Y坐标
         """
         # 取消之前的点击
         self._cancel_pending_click()
 
         # 设置新的延迟点击
-        self.touchpad_state["pending_click"] = {"x": x, "y": y}
+        self.touchpad_state["pending_click"] = True
         self.touchpad_state["click_timer"] = threading.Timer(
             self.config["CLICK_DELAY"], self._execute_delayed_click
         )
@@ -259,15 +278,14 @@ class TouchpadService:
         """执行延迟点击"""
         if self.touchpad_state["pending_click"]:
             # 执行点击
-            from pynput import mouse
-
             self.mouse_controller.click(mouse.Button.left)
-
+            logger.debug("执行延迟点击")
             # 清理状态
             self.touchpad_state["pending_click"] = None
             self.touchpad_state["click_timer"] = None
 
     def _cancel_pending_click(self):
+        logger.debug("取消待处理的点击")
         """取消待处理的点击"""
         if self.touchpad_state["click_timer"]:
             self.touchpad_state["click_timer"].cancel()

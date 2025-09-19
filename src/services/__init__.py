@@ -4,8 +4,7 @@
 """
 
 from .keyboard_service import KeyboardService
-from .mouse_service import MouseService
-from .touchpad_service import TouchpadService
 from .system_service import SystemService
+from .touchpad_service import TouchpadService
 
-__all__ = ['KeyboardService', 'MouseService', 'TouchpadService', 'SystemService']
+__all__ = ["KeyboardService", "TouchpadService", "SystemService"]

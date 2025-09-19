@@ -10,13 +10,10 @@
 
 ### 项目目的
 远程控制器旨在为用户提供一个安全、便捷的方式，通过移动设备或其他计算机的浏览器远程控制目标计算机。特别适用于：
-- 演示和展示场景
-- 媒体中心控制
-- 远程技术支持
 - 无线鼠标键盘替代方案
+- 床上控制电脑播放视频
 
 ### 核心特性
-- 🖱️ **完整鼠标控制**: 移动、点击、滚动、拖拽等全功能支持
 - ⌨️ **智能键盘输入**: 文本输入、快捷键、特殊按键组合
 - 📱 **触摸板模拟**: 支持单指移动、双指滚动、双指右键等手势
 - 🎯 **精确控制**: 高精度坐标定位和平滑移动
@@ -52,7 +49,7 @@
 
 2. **克隆项目**
    ```bash
-   git clone https://github.com/your-username/remote-controller.git
+   git clone https://github.com/isongxw/remote_controller.git
    cd remote-controller
    ```
 
@@ -63,14 +60,14 @@
 
 4. **启动服务器**
    ```bash
-   uv run python src/main.py
+   uv run python src/server.py
    ```
 
 ### 方法二：使用传统 pip
 
 1. **克隆项目**
    ```bash
-   git clone https://github.com/your-username/remote-controller.git
+   git clone https://github.com/isongxw/remote_controller.git
    cd remote-controller
    ```
 
@@ -92,7 +89,7 @@
 
 4. **启动服务器**
    ```bash
-   python src/main.py
+   python src/server.py
    ```
 
 ### 依赖项说明
@@ -106,7 +103,7 @@
 
 1. **启动服务器**
    ```bash
-   uv run python src/main.py
+   uv run python src/server.py
    ```
    
 2. **获取访问地址**
@@ -210,7 +207,7 @@ fetch('/api/touchpad', {
 ```
 remote_controller/
 ├── src/                          # 源代码目录
-│   ├── main.py                   # 应用程序入口点
+│   ├── server.py                   # 应用程序入口点
 │   ├── core/                     # 核心模块
 │   │   ├── __init__.py
 │   │   ├── app.py                # Flask 应用工厂
@@ -218,13 +215,11 @@ remote_controller/
 │   ├── handlers/                 # HTTP 请求处理器
 │   │   ├── __init__.py
 │   │   ├── main.py               # 主页面路由
-│   │   ├── mouse.py              # 鼠标控制 API
 │   │   ├── keyboard.py           # 键盘控制 API
 │   │   ├── touchpad.py           # 触摸板控制 API
 │   │   └── system.py             # 系统功能 API
 │   ├── services/                 # 业务逻辑服务
 │   │   ├── __init__.py
-│   │   ├── mouse_service.py      # 鼠标操作服务
 │   │   ├── keyboard_service.py   # 键盘操作服务
 │   │   ├── touchpad_service.py   # 触摸板处理服务
 │   │   └── system_service.py     # 系统功能服务
@@ -250,11 +245,6 @@ remote_controller/
 4. **配置层** (`core/`): 应用配置和初始化
 
 #### 核心组件
-
-**MouseService**: 鼠标操作核心服务
-- 坐标移动和点击控制
-- 滚轮操作和拖拽功能
-- 多按钮支持 (左键/右键/中键)
 
 **KeyboardService**: 键盘输入核心服务  
 - 文本输入和特殊按键
@@ -286,59 +276,6 @@ remote_controller/
    - 确保运行环境的安全性
    - 定期更新依赖包版本
    - 避免在生产环境中使用调试模式
-
-## 🤝 贡献指南
-
-### 开发环境设置
-
-1. **Fork 项目**
-   ```bash
-   git clone https://github.com/your-username/remote-controller.git
-   cd remote-controller
-   ```
-
-2. **安装开发依赖**
-   ```bash
-   uv add --dev pytest black flake8 mypy
-   ```
-
-3. **运行测试**
-   ```bash
-   uv run pytest tests/
-   ```
-
-4. **代码格式化**
-   ```bash
-   uv run black src/
-   uv run flake8 src/
-   ```
-
-### 常见问题
-
-**Q: 无法连接到服务器？**
-A: 检查防火墙设置，确保端口 5000 未被阻止，并验证网络连接。
-
-**Q: 触摸板手势不工作？**
-A: 确保浏览器支持触摸事件，并检查设备的触摸功能是否正常。
-
-**Q: 键盘输入有延迟？**
-A: 检查网络延迟，考虑优化网络连接或降低输入频率。
-
-
-## 📈 更新日志
-
-### v0.1.0 (当前版本)
-- ✨ 初始版本发布
-- 🖱️ 完整的鼠标控制功能
-- ⌨️ 键盘输入和快捷键支持
-- 📱 触摸板手势识别
-- 🏗️ 模块化架构设计
-- 🛡️ 基础安全控制
-- 🌐 响应式 Web 界面
-
-### 计划功能
-- 📱 移动应用客户端
-- 🔧 更多系统集成功能
 
 ---
 
