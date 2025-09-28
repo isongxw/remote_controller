@@ -66,6 +66,8 @@ class KeyboardService:
         # 按下所有键
         for k in mapped_keys:
             self.keyboard_controller.press(k)
+            time.sleep(0.1)
+
         time.sleep(0.1)
         # 释放所有键
         for k in reversed(mapped_keys):

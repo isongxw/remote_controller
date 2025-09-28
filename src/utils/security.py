@@ -5,7 +5,6 @@
 
 import logging
 import threading
-from venv import logger
 
 from pynput import keyboard, mouse
 

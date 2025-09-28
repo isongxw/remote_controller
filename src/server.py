@@ -9,12 +9,13 @@ import sys
 
 from core.app import create_app
 from core.config import Config
+from utils.system_utils import get_local_ip
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 
 logging.basicConfig(
-    level=logging.NOTSET,  # 只显示 DEBUG 及以上
+    level=Config.LOGGER_LEVEL,
     format="%(asctime)s [%(levelname)-5s] %(name)s: %(message)s",
     datefmt="%H:%M:%S",
     handlers=[logging.StreamHandler(sys.stdout)],  # 显式指定控制台
@@ -30,8 +31,8 @@ def main():
 
     # 启动应用
     logger.info("远程控制器服务器启动中...")
-    logger.info(f"访问地址: http://{Config.HOST}:{Config.PORT}")
-    logger.info(f"访问地址: http://{Config.HOST}:{Config.PORT}")
+    logger.info(f"本机访问地址: http://{Config.HOST}:{Config.PORT}")
+    logger.info(f"远程访问地址: http://{get_local_ip()}:{Config.PORT}")
     app.run(host=Config.HOST, port=Config.PORT, debug=False, threaded=True)
 
 

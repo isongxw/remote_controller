@@ -512,10 +512,11 @@
         <div class="tab-navigation">
             <button class="tab-btn active" data-tab="keyboard">⌨️ 键盘控制</button>
             <button class="tab-btn" data-tab="bilibili">🚀 Bilibili</button>
+            <button class="tab-btn" data-tab="douyin">🎵 抖音</button>
             <button class="tab-btn" data-tab="shortcuts">🚀 系统功能</button>
         </div>
 
-        <!-- 标签页内容容器 -->
+        <!-- 标签页内容容器 --> 
         <div class="tab-content-container">
             <!-- 键盘控制标签页 -->
             <div class="tab-content active" id="tab-keyboard">
@@ -535,32 +536,6 @@
                     <button class="key-btn" onclick="pressKey('delete')">Del</button>
                 </div>
 
-                <!-- 符号按键 -->
-                <!-- <div class="keyboard-row">
-                    <button class="key-btn" onclick="pressKey('[')">[ </button>
-                    <button class="key-btn" onclick="pressKey(']')">] </button>
-                    <button class="key-btn" onclick="pressKey('page_up')">PgUp</button>
-                    <button class="key-btn" onclick="pressKey('page_down')">PgDn</button>
-                    <button class="key-btn" onclick="pressKey('home')">Home</button>
-                    <button class="key-btn" onclick="pressKey('end')">End</button>
-                </div> -->
-
-                <!-- 方向键 -->
-                <!-- <div class="keyboard-row">
-                    <button class="key-btn" onclick="pressKey('up')">↑</button>
-                    <button class="key-btn" onclick="pressKey('down')">↓</button>
-                    <button class="key-btn" onclick="pressKey('left')">←</button>
-                    <button class="key-btn" onclick="pressKey('right')">→</button>
-                </div> -->
-
-                <!-- 修饰键 -->
-                <!-- <div class="keyboard-row">
-                    <button class="key-btn" onclick="pressKey('ctrl')">Ctrl</button>
-                    <button class="key-btn" onclick="pressKey('alt')">Alt</button>
-                    <button class="key-btn" onclick="pressKey('shift')">Shift</button>
-                    <button class="key-btn" onclick="pressKey('win')">Win</button>
-                    <button class="key-btn wide" onclick="pressKey('space')">Space</button>
-                </div> -->
             </div>
 
             <!-- Bilibili快捷键标签页 -->
@@ -569,12 +544,30 @@
                 <div class="hotkey-grid">
                     <button class="hotkey-btn" onclick="pressKey('[')">上一集<br>[</button>
                     <button class="hotkey-btn" onclick="pressKey(']')">下一集<br>]</button>
-                    <button class="hotkey-btn" onclick="pressKey('left')">快退5s<br>⬅️</button>
-                    <button class="hotkey-btn" onclick="pressKey('right')">快进5s<br>➡️</button>
+                    <button class="hotkey-btn" onclick="pressKey('left')">快退5s<br>←</button>
+                    <button class="hotkey-btn" onclick="pressKey('right')">快进5s<br>→</button>
                     <button class="hotkey-btn" onclick="pressKey('f')">全屏<br>F</button>
                     <button class="hotkey-btn" onclick="pressKey('space')">播放/暂停<br>Space</button>
                     <button class="hotkey-btn" onclick="pressKey('d')">打开/关闭弹幕<br>D</button>
                     <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'r'])">刷新<br>Ctrl+R</button>
+                </div>
+            </div>
+
+            <!-- 抖音快捷键标签页 -->
+            <div class="tab-content" id="tab-douyin">
+                <h2>🎵 抖音快捷键</h2>
+                <div class="hotkey-grid">
+                    <button class="hotkey-btn" onclick="pressKey('up')">上一条<br>↑</button>
+                    <button class="hotkey-btn" onclick="pressKey('down')">下一条<br>↓</button>
+                    <button class="hotkey-btn" onclick="pressKey('left')">快退<br>←</button>
+                    <button class="hotkey-btn" onclick="pressKey('right')">快进<br>→</button>
+                    <button class="hotkey-btn" onclick="sendHotkey(['shift', '+'])">音量+<br>Shift+</button>
+                    <button class="hotkey-btn" onclick="sendHotkey(['shift', '-'])">音量-<br>Shift-</button>
+                    <button class="hotkey-btn" onclick="pressKey('y')">网页内全屏<br>Y</button>
+                    <button class="hotkey-btn" onclick="pressKey('h')">全屏<br>H</button>
+                    <button class="hotkey-btn" onclick="pressKey('space')">暂停<br>空格</button>
+                    <button class="hotkey-btn" onclick="pressKey('b')">开启/关闭弹幕<br>B</button>
+
                 </div>
             </div>
 

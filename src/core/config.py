@@ -3,6 +3,7 @@
 包含应用的全局配置和常量定义
 """
 
+import logging
 import platform
 
 from pynput.keyboard import Key
@@ -14,8 +15,8 @@ class Config:
 
     HOST = "0.0.0.0"
     LOCAL_HOST = "127.0.0.1"
-    PORT = 5000
-    DEBUG = True
+    PORT = 8088
+    LOGGER_LEVEL = logging.INFO
 
 
 # 触摸板配置
@@ -61,6 +62,8 @@ WINDOWS_KEY_MAP = {
     "page_down": Key.page_down,
     "[": "[",
     "]": "]",
+    "+": "=",
+    "-": "-",
 }
 
 # 系统信息

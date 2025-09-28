@@ -3,8 +3,6 @@ Flask应用工厂模块
 创建和配置Flask应用实例
 """
 
-import logging
-
 from flask import Flask
 from flask_cors import CORS
 
@@ -24,10 +22,7 @@ def create_app():
     app.config.from_object(Config)
 
     # 配置Flask应用的日志级别
-    app.logger.setLevel(logging.DEBUG)
-
-    # 确保所有logger都使用DEBUG级别
-    logging.getLogger().setLevel(logging.DEBUG)
+    app.logger.setLevel(Config.LOGGER_LEVEL)
 
     # 启用CORS
     CORS(app)
