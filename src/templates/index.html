@@ -512,7 +512,7 @@
         <div class="tab-navigation">
             <button class="tab-btn active" data-tab="keyboard">⌨️ 键盘控制</button>
             <button class="tab-btn" data-tab="bilibili">🚀 Bilibili</button>
-            <button class="tab-btn" data-tab="shortcuts">🚀 快捷键</button>
+            <button class="tab-btn" data-tab="shortcuts">🚀 系统功能</button>
         </div>
 
         <!-- 标签页内容容器 -->
@@ -567,30 +567,26 @@
             <div class="tab-content" id="tab-bilibili">
                 <h2>🚀 Bilibili快捷键</h2>
                 <div class="hotkey-grid">
-                    <button class="hotkey-btn" onclick="pressKey('F')">全屏<br>F</button>
-                    <button class="hotkey-btn" onclick="pressKey('Space')">播放/暂停<br>space</button>
-                    <button class="hotkey-btn" onclick="pressKey('D')">打开/关闭弹幕<br>d</button>
                     <button class="hotkey-btn" onclick="pressKey('[')">上一集<br>[</button>
                     <button class="hotkey-btn" onclick="pressKey(']')">下一集<br>]</button>
-                    <button class="hotkey-btn" onclick="pressKey('right')">快进5s<br>[</button>
-                    <button class="hotkey-btn" onclick="pressKey('left')">快退5s<br>]</button>
+                    <button class="hotkey-btn" onclick="pressKey('left')">快退5s<br>⬅️</button>
+                    <button class="hotkey-btn" onclick="pressKey('right')">快进5s<br>➡️</button>
+                    <button class="hotkey-btn" onclick="pressKey('f')">全屏<br>F</button>
+                    <button class="hotkey-btn" onclick="pressKey('space')">播放/暂停<br>Space</button>
+                    <button class="hotkey-btn" onclick="pressKey('d')">打开/关闭弹幕<br>D</button>
                     <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'r'])">刷新<br>Ctrl+R</button>
                 </div>
             </div>
 
             <!-- 常用快捷键标签页 -->
             <div class="tab-content" id="tab-shortcuts">
-                <h2>🚀 常用快捷键</h2>
+                <h2>🚀 系统功能</h2>
                 <div class="hotkey-grid">
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'c'])">复制<br>Ctrl+C</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'v'])">粘贴<br>Ctrl+V</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'z'])">撤销<br>Ctrl+Z</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'y'])">重做<br>Ctrl+Y</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 'a'])">全选<br>Ctrl+A</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['ctrl', 's'])">保存<br>Ctrl+S</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['alt', 'tab'])">切换<br>Alt+Tab</button>
-                    <button class="hotkey-btn" onclick="sendHotkey(['win', 'd'])">桌面<br>Win+D</button>
                     <button class="hotkey-btn" onclick="sendSystem('lock')">锁屏<br>Win+L</button>
+                    <button class="hotkey-btn" onclick="sendHotkey(['win', 'd'])">桌面<br>Win+D</button>
+                    <button class="hotkey-btn" onclick="sendSystem('restart')">重启<br>Restart</button>
+                    <button class="hotkey-btn" onclick="sendSystem('shutdown')">关机<br>Shutdown</button>
+                    <button class="hotkey-btn" onclick="sendHotkey(['alt', 'tab'])">切换<br>Alt+Tab</button>
                 </div>
             </div>
         </div> <!-- 结束 tab-content-container -->
