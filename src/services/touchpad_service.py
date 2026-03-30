@@ -305,3 +305,12 @@ class TouchpadService:
             "has_pending_click": self.touchpad_state["pending_click"] is not None,
             "last_touch_time": self.touchpad_state["last_touch_time"],
         }
+
+    def shutdown(self):
+        """
+        关闭服务，清理资源
+        """
+        self._cancel_pending_click()
+        self.touchpad_state["active_touches"].clear()
+        self.touchpad_state["is_dragging"] = False
+        self.touchpad_state["drag_start_pos"] = None

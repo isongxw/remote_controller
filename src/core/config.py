@@ -21,11 +21,17 @@ class Config:
 
 # 触摸板配置
 TOUCHPAD_CONFIG = {
-    "CLICK_DELAY": 0.15,  # 点击延迟时间（秒）
-    "DOUBLE_CLICK_TIME": 0.3,  # 双击检测时间窗口（秒）
-    "MOVE_THRESHOLD": 5,  # 移动阈值（像素）
-    "CURSOR_SENSITIVITY": 2.0,  # 光标移动灵敏度
-    "SCROLL_SENSITIVITY": 0.1,  # 滚动灵敏度
+    "CLICK_DELAY": 0.15,
+    "DOUBLE_CLICK_TIME": 0.3,
+    "MOVE_THRESHOLD": 5,
+    "CURSOR_SENSITIVITY": 2.0,
+    "SCROLL_SENSITIVITY": 0.1,
+}
+
+# 键盘操作配置
+KEYBOARD_CONFIG = {
+    "HOTKEY_PRESS_INTERVAL": 0.1,
+    "HOTKEY_RELEASE_INTERVAL": 0.1,
 }
 
 # Windows系统键位映射

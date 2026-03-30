@@ -5,6 +5,9 @@
 
 import ctypes
 import subprocess
+import logging
+
+logger = logging.getLogger(__name__)
 
 from core.config import CURRENT_PLATFORM
 from utils.system_utils import get_system_info
@@ -96,12 +99,16 @@ class SystemService:
         """
         try:
             if CURRENT_PLATFORM == "Windows":
-                subprocess.run(["shutdown", "/s", "/t", "0"], check=True)
+                subprocess.run(["shutdown", "/s", "/t", "0"])
             else:
-                subprocess.run(["shutdown", "now"], check=True)
+                subprocess.run(["shutdown", "now"])
 
             return {"status": "success", "message": "系统关闭命令已执行"}
+        except subprocess.SubprocessError as e:
+            logger.error(f"系统关闭失败: {e}")
+            return {"status": "error", "message": f"系统关闭失败: {str(e)}"}
         except Exception as e:
+            logger.error(f"系统关闭失败: {e}")
             return {"status": "error", "message": f"系统关闭失败: {str(e)}"}
 
     def restart_system(self):
@@ -113,10 +120,14 @@ class SystemService:
         """
         try:
             if CURRENT_PLATFORM == "Windows":
-                subprocess.run(["shutdown", "/r", "/t", "0"], check=True)
+                subprocess.run(["shutdown", "/r", "/t", "0"])
             else:
-                subprocess.run(["reboot"], check=True)
+                subprocess.run(["reboot"])
 
             return {"status": "success", "message": "系统重启命令已执行"}
+        except subprocess.SubprocessError as e:
+            logger.error(f"系统重启失败: {e}")
+            return {"status": "error", "message": f"系统重启失败: {str(e)}"}
         except Exception as e:
+            logger.error(f"系统重启失败: {e}")
             return {"status": "error", "message": f"系统重启失败: {str(e)}"}

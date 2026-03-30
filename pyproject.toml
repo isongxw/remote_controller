@@ -11,3 +11,8 @@ dependencies = [
     "pynput>=1.8.1",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+]
+

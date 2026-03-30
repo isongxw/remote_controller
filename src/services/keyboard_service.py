@@ -5,7 +5,7 @@
 
 import time
 
-from core.config import WINDOWS_KEY_MAP
+from core.config import KEYBOARD_CONFIG, WINDOWS_KEY_MAP
 from utils.security import get_controllers
 
 
@@ -55,7 +55,6 @@ class KeyboardService:
         Args:
             keys: 按键列表
         """
-        # 处理组合键
         mapped_keys = []
         for k in keys:
             if k in WINDOWS_KEY_MAP:
@@ -63,12 +62,10 @@ class KeyboardService:
             else:
                 mapped_keys.append(k)
 
-        # 按下所有键
         for k in mapped_keys:
             self.keyboard_controller.press(k)
-            time.sleep(0.1)
+            time.sleep(KEYBOARD_CONFIG["HOTKEY_PRESS_INTERVAL"])
 
-        time.sleep(0.1)
-        # 释放所有键
+        time.sleep(KEYBOARD_CONFIG["HOTKEY_RELEASE_INTERVAL"])
         for k in reversed(mapped_keys):
             self.keyboard_controller.release(k)

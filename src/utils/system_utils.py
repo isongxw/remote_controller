@@ -18,12 +18,13 @@ def get_screen_size():
         import tkinter as tk
 
         root = tk.Tk()
+        root.withdraw()
         width = root.winfo_screenwidth()
         height = root.winfo_screenheight()
         root.destroy()
         return {"width": width, "height": height}
-    except:
-        return {"width": 1920, "height": 1080}  # 默认值
+    except Exception:
+        return {"width": 1920, "height": 1080}
 
 
 def get_system_info():

@@ -55,7 +55,7 @@ def cleanup_keyboard_state():
     for key in CLEANUP_KEYS:
         try:
             keyboard_controller.release(key)
-        except:
+        except Exception:
             pass
 
 
